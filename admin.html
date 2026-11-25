@@ -1,6 +1,388 @@
-<html>
-<style>
-   div{min-height:1em;}
-</style>
-<body>&lt;!DOCTYPE html&gt;<br/>&lt;html lang=&quot;bn&quot;&gt;<br/>&lt;head&gt;<br/>  &lt;meta charset=&quot;UTF-8&quot; /&gt;<br/>  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;<br/>  &lt;title&gt;Admin Panel — AuraMart Control&lt;/title&gt;<br/>  &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;<br/>  &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;<br/>  &lt;style&gt;<br/>    body {<br/>      font-family: &#39;Plus Jakarta Sans&#39;, &#39;Hind Siliguri&#39;, sans-serif;<br/>      background-color: #f1f5f9;<br/>      color: #0f172a;<br/>    }<br/>  &lt;/style&gt;<br/>&lt;/head&gt;<br/>&lt;body class=&quot;min-h-screen&quot;&gt;<br/><br/>  &lt;!-- Login Screen --&gt;<br/>  &lt;div id=&quot;loginScreen&quot; class=&quot;min-h-screen flex items-center justify-center p-4&quot;&gt;<br/>    &lt;div class=&quot;w-full max-w-sm bg-white rounded-3xl shadow-xl border border-slate-100 p-7&quot;&gt;<br/>      &lt;div class=&quot;w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-xl mb-4&quot;&gt;<br/>        ⚡<br/>      &lt;/div&gt;<br/>      &lt;h1 class=&quot;text-xl font-extrabold text-slate-900&quot;&gt;অ্যাডমিন লগইন&lt;/h1&gt;<br/>      &lt;p class=&quot;text-xs text-slate-500 mt-1&quot;&gt;প্রোডাক্ট যুক্ত করতে ও অর্ডার কন্ট্রোল করতে পিন দিন।&lt;/p&gt;<br/><br/>      &lt;form onsubmit=&quot;handleLogin(event)&quot; class=&quot;mt-5 space-y-4&quot;&gt;<br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;Admin PIN&lt;/label&gt;<br/>          &lt;input id=&quot;pinInput&quot; type=&quot;password&quot; required placeholder=&quot;পিন দিন (ডিফল্ট: 1234)&quot;<br/>            class=&quot;w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm&quot; /&gt;<br/>        &lt;/div&gt;<br/>        &lt;p id=&quot;loginError&quot; class=&quot;text-xs font-semibold text-rose-600 hidden&quot;&gt;ভুল পিন দিয়েছেন! আবার চেষ্টা করুন।&lt;/p&gt;<br/>        &lt;button type=&quot;submit&quot; class=&quot;w-full py-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-sm font-bold transition&quot;&gt;<br/>          ড্যাশবোর্ডে প্রবেশ করুন<br/>        &lt;/button&gt;<br/>      &lt;/form&gt;<br/>      &lt;a href=&quot;index.html&quot; class=&quot;block text-center text-xs text-slate-500 hover:text-slate-800 mt-5&quot;&gt;← কাস্টমার ওয়েবসাইটে ফিরে যান&lt;/a&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- Admin Dashboard --&gt;<br/>  &lt;div id=&quot;dashboard&quot; class=&quot;hidden&quot;&gt;<br/>    &lt;!-- Topbar --&gt;<br/>    &lt;header class=&quot;bg-slate-900 text-white sticky top-0 z-30 border-b border-slate-800&quot;&gt;<br/>      &lt;div class=&quot;max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between&quot;&gt;<br/>        &lt;div class=&quot;flex items-center gap-2.5&quot;&gt;<br/>          &lt;span class=&quot;px-2.5 py-1 rounded-lg bg-indigo-500 text-xs font-extrabold&quot;&gt;ADMIN&lt;/span&gt;<br/>          &lt;h1 class=&quot;font-extrabold text-base sm:text-lg&quot;&gt;AuraMart Control Center&lt;/h1&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;flex items-center gap-2 sm:gap-3&quot;&gt;<br/>          &lt;a href=&quot;index.html&quot; target=&quot;_blank&quot; class=&quot;px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold&quot;&gt;<br/>            কাস্টমার সাইট ↗<br/>          &lt;/a&gt;<br/>          &lt;button onclick=&quot;logout()&quot; class=&quot;px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-semibold&quot;&gt;<br/>            লগআউট<br/>          &lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/header&gt;<br/><br/>    &lt;main class=&quot;max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6&quot;&gt;<br/>      &lt;!-- Stats Cards --&gt;<br/>      &lt;div class=&quot;grid grid-cols-2 lg:grid-cols-4 gap-4&quot;&gt;<br/>        &lt;div class=&quot;bg-white p-5 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;p class=&quot;text-xs font-semibold text-slate-500&quot;&gt;মোট অর্ডার এসেছে&lt;/p&gt;<br/>          &lt;p id=&quot;statTotalOrders&quot; class=&quot;text-2xl font-extrabold text-slate-900 mt-1&quot;&gt;0&lt;/p&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;bg-white p-5 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;p class=&quot;text-xs font-semibold text-slate-500&quot;&gt;পেন্ডিং অর্ডার&lt;/p&gt;<br/>          &lt;p id=&quot;statPendingOrders&quot; class=&quot;text-2xl font-extrabold text-amber-600 mt-1&quot;&gt;0&lt;/p&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;bg-white p-5 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;p class=&quot;text-xs font-semibold text-slate-500&quot;&gt;মোট সেলস ভ্যালু&lt;/p&gt;<br/>          &lt;p id=&quot;statTotalRevenue&quot; class=&quot;text-2xl font-extrabold text-emerald-600 mt-1&quot;&gt;৳0&lt;/p&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;bg-white p-5 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;p class=&quot;text-xs font-semibold text-slate-500&quot;&gt;মোট প্রোডাক্ট&lt;/p&gt;<br/>          &lt;p id=&quot;statTotalProducts&quot; class=&quot;text-2xl font-extrabold text-indigo-600 mt-1&quot;&gt;0&lt;/p&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Navigation Tabs --&gt;<br/>      &lt;div class=&quot;flex gap-2&quot;&gt;<br/>        &lt;button id=&quot;tabOrders&quot; onclick=&quot;switchTab(&#39;orders&#39;)&quot; class=&quot;px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold&quot;&gt;<br/>          অর্ডার ম্যানেজমেন্ট<br/>        &lt;/button&gt;<br/>        &lt;button id=&quot;tabProducts&quot; onclick=&quot;switchTab(&#39;products&#39;)&quot; class=&quot;px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold&quot;&gt;<br/>          প্রোডাক্ট যুক্ত ও পরিচালনা<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- ORDERS SECTION --&gt;<br/>      &lt;section id=&quot;ordersSection&quot; class=&quot;space-y-4&quot;&gt;<br/>        &lt;div class=&quot;flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>            &lt;span class=&quot;text-xs font-bold text-slate-600&quot;&gt;স্ট্যাটাস ফিল্টার:&lt;/span&gt;<br/>            &lt;select id=&quot;statusFilter&quot; onchange=&quot;renderOrders()&quot; class=&quot;px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 outline-none&quot;&gt;<br/>              &lt;option value=&quot;All&quot;&gt;সব অর্ডার&lt;/option&gt;<br/>              &lt;option value=&quot;Pending&quot;&gt;Pending&lt;/option&gt;<br/>              &lt;option value=&quot;Confirmed&quot;&gt;Confirmed&lt;/option&gt;<br/>              &lt;option value=&quot;Shipped&quot;&gt;Shipped&lt;/option&gt;<br/>              &lt;option value=&quot;Delivered&quot;&gt;Delivered&lt;/option&gt;<br/>              &lt;option value=&quot;Cancelled&quot;&gt;Cancelled&lt;/option&gt;<br/>            &lt;/select&gt;<br/>          &lt;/div&gt;<br/>          &lt;button onclick=&quot;renderAll()&quot; class=&quot;text-xs font-bold text-indigo-600 hover:underline&quot;&gt;↻ রিফ্রেশ করুন&lt;/button&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div id=&quot;ordersList&quot; class=&quot;space-y-3&quot;&gt;&lt;/div&gt;<br/>      &lt;/section&gt;<br/><br/>      &lt;!-- PRODUCTS SECTION --&gt;<br/>      &lt;section id=&quot;productsSection&quot; class=&quot;hidden grid grid-cols-1 lg:grid-cols-3 gap-6&quot;&gt;<br/>        &lt;!-- Add Product Form --&gt;<br/>        &lt;div class=&quot;bg-white p-5 rounded-2xl border border-slate-200/70 h-fit&quot;&gt;<br/>          &lt;h2 class=&quot;text-base font-extrabold text-slate-900 mb-4&quot;&gt;+ নতুন প্রোডাক্ট যুক্ত করুন&lt;/h2&gt;<br/>          &lt;form onsubmit=&quot;addProduct(event)&quot; class=&quot;space-y-3 text-sm&quot;&gt;<br/>            &lt;div&gt;<br/>              &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;প্রোডাক্টের নাম *&lt;/label&gt;<br/>              &lt;input id=&quot;pName&quot; required type=&quot;text&quot; placeholder=&quot;যেমন: Mechanical Keyboard&quot;<br/>                class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot; /&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;div class=&quot;grid grid-cols-2 gap-2.5&quot;&gt;<br/>              &lt;div&gt;<br/>                &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;বিক্রয় মূল্য (৳) *&lt;/label&gt;<br/>                &lt;input id=&quot;pPrice&quot; required type=&quot;number&quot; min=&quot;1&quot; placeholder=&quot;1450&quot;<br/>                  class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot; /&gt;<br/>              &lt;/div&gt;<br/>              &lt;div&gt;<br/>                &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;পুরাতন দাম (ঐচ্ছিক)&lt;/label&gt;<br/>                &lt;input id=&quot;pOldPrice&quot; type=&quot;number&quot; min=&quot;1&quot; placeholder=&quot;1800&quot;<br/>                  class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot; /&gt;<br/>              &lt;/div&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;div&gt;<br/>              &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;ক্যাটাগরি *&lt;/label&gt;<br/>              &lt;input id=&quot;pCategory&quot; required type=&quot;text&quot; list=&quot;catSuggestions&quot; placeholder=&quot;Gadgets / Fashion / Accessories&quot;<br/>                class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot; /&gt;<br/>              &lt;datalist id=&quot;catSuggestions&quot;&gt;<br/>                &lt;option value=&quot;Gadgets&quot;&gt;<br/>                &lt;option value=&quot;Fashion&quot;&gt;<br/>                &lt;option value=&quot;Accessories&quot;&gt;<br/>                &lt;option value=&quot;Home &amp; Living&quot;&gt;<br/>              &lt;/datalist&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;div&gt;<br/>              &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;ছবির লিংক (Image URL)&lt;/label&gt;<br/>              &lt;input id=&quot;pImage&quot; type=&quot;url&quot; placeholder=&quot;https://...&quot;<br/>                class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot; /&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;div&gt;<br/>              &lt;label class=&quot;block text-xs font-bold text-slate-700 mb-1&quot;&gt;সংক্ষিপ্ত বিবরণ&lt;/label&gt;<br/>              &lt;textarea id=&quot;pDesc&quot; rows=&quot;2&quot; placeholder=&quot;প্রোডাক্টের মূল বৈশিষ্ট্য...&quot;<br/>                class=&quot;w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none&quot;&gt;&lt;/textarea&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;button type=&quot;submit&quot; class=&quot;w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md transition&quot;&gt;<br/>              প্রোডাক্ট পাবলিশ করুন<br/>            &lt;/button&gt;<br/>          &lt;/form&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Product List --&gt;<br/>        &lt;div class=&quot;lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/70&quot;&gt;<br/>          &lt;h2 class=&quot;text-base font-extrabold text-slate-900 mb-4&quot;&gt;আপনার প্রোডাক্ট লিস্ট&lt;/h2&gt;<br/>          &lt;div id=&quot;adminProductList&quot; class=&quot;space-y-3&quot;&gt;&lt;/div&gt;<br/>        &lt;/div&gt;<br/>      &lt;/section&gt;<br/>    &lt;/main&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;script&gt;<br/>    const ADMIN_PIN = &#39;1234&#39;; // চাইলে এখান থেকে নিজের পাসওয়ার্ড/পিন পরিবর্তন করুন<br/>    const AUTH_KEY = &#39;auramart_admin_auth&#39;;<br/>    const PRODUCTS_KEY = &#39;auramart_products_v1&#39;;<br/>    const ORDERS_KEY = &#39;auramart_orders_v1&#39;;<br/><br/>    function handleLogin(e) {<br/>      e.preventDefault();<br/>      const pin = document.getElementById(&#39;pinInput&#39;).value.trim();<br/>      if (pin === ADMIN_PIN) {<br/>        sessionStorage.setItem(AUTH_KEY, &#39;true&#39;);<br/>        showDashboard();<br/>      } else {<br/>        document.getElementById(&#39;loginError&#39;).classList.remove(&#39;hidden&#39;);<br/>      }<br/>    }<br/><br/>    function logout() {<br/>      sessionStorage.removeItem(AUTH_KEY);<br/>      location.reload();<br/>    }<br/><br/>    function showDashboard() {<br/>      document.getElementById(&#39;loginScreen&#39;).classList.add(&#39;hidden&#39;);<br/>      document.getElementById(&#39;dashboard&#39;).classList.remove(&#39;hidden&#39;);<br/>      renderAll();<br/>    }<br/><br/>    function getProducts() {<br/>      return JSON.parse(localStorage.getItem(PRODUCTS_KEY) || &#39;[]&#39;);<br/>    }<br/><br/>    function saveProducts(products) {<br/>      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));<br/>    }<br/><br/>    function getOrders() {<br/>      return JSON.parse(localStorage.getItem(ORDERS_KEY) || &#39;[]&#39;);<br/>    }<br/><br/>    function saveOrders(orders) {<br/>      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));<br/>    }<br/><br/>    function switchTab(tab) {<br/>      const isOrders = tab === &#39;orders&#39;;<br/>      document.getElementById(&#39;ordersSection&#39;).classList.toggle(&#39;hidden&#39;, !isOrders);<br/>      document.getElementById(&#39;productsSection&#39;).classList.toggle(&#39;hidden&#39;, isOrders);<br/><br/>      document.getElementById(&#39;tabOrders&#39;).className = isOrders<br/>        ? &#39;px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold&#39;<br/>        : &#39;px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold&#39;;<br/><br/>      document.getElementById(&#39;tabProducts&#39;).className = !isOrders<br/>        ? &#39;px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold&#39;<br/>        : &#39;px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold&#39;;<br/>    }<br/><br/>    function renderStats() {<br/>      const orders = getOrders();<br/>      const products = getProducts();<br/>      const pending = orders.filter(o =&gt; o.status === &#39;Pending&#39;).length;<br/>      const revenue = orders<br/>        .filter(o =&gt; o.status !== &#39;Cancelled&#39;)<br/>        .reduce((sum, o) =&gt; sum + Number(o.total || 0), 0);<br/><br/>      document.getElementById(&#39;statTotalOrders&#39;).textContent = orders.length;<br/>      document.getElementById(&#39;statPendingOrders&#39;).textContent = pending;<br/>      document.getElementById(&#39;statTotalRevenue&#39;).textContent = `৳${revenue.toLocaleString()}`;<br/>      document.getElementById(&#39;statTotalProducts&#39;).textContent = products.length;<br/>    }<br/><br/>    function renderOrders() {<br/>      const filter = document.getElementById(&#39;statusFilter&#39;).value;<br/>      const orders = getOrders().filter(o =&gt; filter === &#39;All&#39; || o.status === filter);<br/>      const container = document.getElementById(&#39;ordersList&#39;);<br/><br/>      if (!orders.length) {<br/>        container.innerHTML = `&lt;div class=&quot;bg-white p-10 rounded-2xl border border-slate-200/70 text-center text-slate-500 text-sm&quot;&gt;<br/>          এখনো কোনো অর্ডার পাওয়া যায়নি। কাস্টমার সাইট থেকে অর্ডার করলে এখানে দেখাবে।<br/>        &lt;/div&gt;`;<br/>        return;<br/>      }<br/><br/>      container.innerHTML = orders.map(o =&gt; `<br/>        &lt;div class=&quot;bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 space-y-3&quot;&gt;<br/>          &lt;div class=&quot;flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100&quot;&gt;<br/>            &lt;div&gt;<br/>              &lt;span class=&quot;font-extrabold text-slate-900&quot;&gt;${o.id}&lt;/span&gt;<br/>              &lt;span class=&quot;text-xs text-slate-400 ml-2&quot;&gt;${o.date}&lt;/span&gt;<br/>            &lt;/div&gt;<br/>            &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>              &lt;select onchange=&quot;updateOrderStatus(&#39;${o.id}&#39;, this.value)&quot; class=&quot;px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 outline-none&quot;&gt;<br/>                ${[&#39;Pending&#39;, &#39;Confirmed&#39;, &#39;Shipped&#39;, &#39;Delivered&#39;, &#39;Cancelled&#39;].map(st =&gt;<br/>                  `&lt;option value=&quot;${st}&quot; ${o.status === st ? &#39;selected&#39; : &#39;&#39;}&gt;${st}&lt;/option&gt;`<br/>                ).join(&#39;&#39;)}<br/>              &lt;/select&gt;<br/>              &lt;button onclick=&quot;deleteOrder(&#39;${o.id}&#39;)&quot; class=&quot;px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold&quot;&gt;<br/>                ডিলিট<br/>              &lt;/button&gt;<br/>            &lt;/div&gt;<br/>          &lt;/div&gt;<br/><br/>          &lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm&quot;&gt;<br/>            &lt;div class=&quot;space-y-1&quot;&gt;<br/>              &lt;p&gt;&lt;strong&gt;কাস্টমার:&lt;/strong&gt; ${o.customer}&lt;/p&gt;<br/>              &lt;p&gt;&lt;strong&gt;ফোন:&lt;/strong&gt; &lt;a href=&quot;tel:${o.phone}&quot; class=&quot;text-indigo-600 font-bold underline&quot;&gt;${o.phone}&lt;/a&gt;&lt;/p&gt;<br/>              &lt;p&gt;&lt;strong&gt;ঠিকানা:&lt;/strong&gt; ${o.address} &lt;span class=&quot;text-slate-500&quot;&gt;(${o.area})&lt;/span&gt;&lt;/p&gt;<br/>              &lt;p&gt;&lt;strong&gt;পেমেন্ট:&lt;/strong&gt; &lt;span class=&quot;font-semibold&quot;&gt;${o.payment}&lt;/span&gt;&lt;/p&gt;<br/>            &lt;/div&gt;<br/><br/>            &lt;div class=&quot;bg-slate-50 p-3 rounded-xl space-y-1.5&quot;&gt;<br/>              &lt;p class=&quot;text-xs font-bold text-slate-500&quot;&gt;অর্ডারকৃত আইটেম:&lt;/p&gt;<br/>              ${(o.items || []).map(item =&gt; `<br/>                &lt;div class=&quot;flex justify-between text-xs&quot;&gt;<br/>                  &lt;span&gt;${item.name} × &lt;strong&gt;${item.qty}&lt;/strong&gt;&lt;/span&gt;<br/>                  &lt;span class=&quot;font-bold&quot;&gt;৳${(item.price * item.qty).toLocaleString()}&lt;/span&gt;<br/>                &lt;/div&gt;<br/>              `).join(&#39;&#39;)}<br/>              &lt;div class=&quot;pt-1.5 border-t border-slate-200 flex justify-between font-extrabold text-slate-900&quot;&gt;<br/>                &lt;span&gt;সর্বমোট (ডেলিভারিসহ)&lt;/span&gt;<br/>                &lt;span class=&quot;text-indigo-600&quot;&gt;৳${Number(o.total).toLocaleString()}&lt;/span&gt;<br/>              &lt;/div&gt;<br/>            &lt;/div&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>      `).join(&#39;&#39;);<br/>    }<br/><br/>    function updateOrderStatus(orderId, newStatus) {<br/>      const orders = getOrders().map(o =&gt; o.id === orderId ? { ...o, status: newStatus } : o);<br/>      saveOrders(orders);<br/>      renderStats();<br/>    }<br/><br/>    function deleteOrder(orderId) {<br/>      if (!confirm(&#39;এই অর্ডারটি ডিলিট করতে চান?&#39;)) return;<br/>      const orders = getOrders().filter(o =&gt; o.id !== orderId);<br/>      saveOrders(orders);<br/>      renderAll();<br/>    }<br/><br/>    function addProduct(e) {<br/>      e.preventDefault();<br/>      const products = getProducts();<br/>      const newProd = {<br/>        id: &#39;PRD-&#39; + Math.floor(1000 + Math.random() * 9000),<br/>        name: document.getElementById(&#39;pName&#39;).value.trim(),<br/>        price: Number(document.getElementById(&#39;pPrice&#39;).value),<br/>        oldPrice: document.getElementById(&#39;pOldPrice&#39;).value ? Number(document.getElementById(&#39;pOldPrice&#39;).value) : null,<br/>        category: document.getElementById(&#39;pCategory&#39;).value.trim() || &#39;General&#39;,<br/>        image: document.getElementById(&#39;pImage&#39;).value.trim() || &#39;https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&amp;fit=crop&amp;w=600&amp;q=80&#39;,<br/>        desc: document.getElementById(&#39;pDesc&#39;).value.trim(),<br/>        stock: true<br/>      };<br/><br/>      products.unshift(newProd);<br/>      saveProducts(products);<br/>      e.target.reset();<br/>      renderAll();<br/>      alert(&#39;নতুন প্রোডাক্ট কাস্টমার ওয়েবসাইটে যুক্ত হয়েছে!&#39;);<br/>    }<br/><br/>    function toggleStock(prodId) {<br/>      const products = getProducts().map(p =&gt; p.id === prodId ? { ...p, stock: !p.stock } : p);<br/>      saveProducts(products);<br/>      renderProductsAdmin();<br/>    }<br/><br/>    function deleteProduct(prodId) {<br/>      if (!confirm(&#39;প্রোডাক্টটি মুছে ফেলতে চান?&#39;)) return;<br/>      const products = getProducts().filter(p =&gt; p.id !== prodId);<br/>      saveProducts(products);<br/>      renderAll();<br/>    }<br/><br/>    function renderProductsAdmin() {<br/>      const products = getProducts();<br/>      const box = document.getElementById(&#39;adminProductList&#39;);<br/><br/>      if (!products.length) {<br/>        box.innerHTML = `&lt;p class=&quot;text-sm text-slate-500 py-8 text-center&quot;&gt;কোনো প্রোডাক্ট নেই। বাম পাশ থেকে যুক্ত করুন।&lt;/p&gt;`;<br/>        return;<br/>      }<br/><br/>      box.innerHTML = products.map(p =&gt; `<br/>        &lt;div class=&quot;flex items-center justify-between gap-3 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50/70&quot;&gt;<br/>          &lt;div class=&quot;flex items-center gap-3 min-w-0&quot;&gt;<br/>            &lt;img src=&quot;${p.image}&quot; class=&quot;w-14 h-14 rounded-xl object-cover bg-slate-100 shrink-0&quot; /&gt;<br/>            &lt;div class=&quot;min-w-0&quot;&gt;<br/>              &lt;p class=&quot;text-sm font-bold text-slate-900 truncate&quot;&gt;${p.name}&lt;/p&gt;<br/>              &lt;p class=&quot;text-xs text-slate-500&quot;&gt;${p.category} • &lt;strong class=&quot;text-slate-800&quot;&gt;৳${Number(p.price).toLocaleString()}&lt;/strong&gt;&lt;/p&gt;<br/>            &lt;/div&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;flex items-center gap-2 shrink-0&quot;&gt;<br/>            &lt;button onclick=&quot;toggleStock(&#39;${p.id}&#39;)&quot; class=&quot;px-2.5 py-1.5 rounded-xl text-xs font-bold ${<br/>              p.stock ? &#39;bg-emerald-100 text-emerald-700&#39; : &#39;bg-amber-100 text-amber-700&#39;<br/>            }&quot;&gt;<br/>              ${p.stock ? &#39;In Stock&#39; : &#39;Stock Out&#39;}<br/>            &lt;/button&gt;<br/>            &lt;button onclick=&quot;deleteProduct(&#39;${p.id}&#39;)&quot; class=&quot;px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold&quot;&gt;<br/>              ডিলিট<br/>            &lt;/button&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>      `).join(&#39;&#39;);<br/>    }<br/><br/>    function renderAll() {<br/>      renderStats();<br/>      renderOrders();<br/>      renderProductsAdmin();<br/>    }<br/><br/>    if (sessionStorage.getItem(AUTH_KEY) === &#39;true&#39;) {<br/>      showDashboard();<br/>    }<br/>  &lt;/script&gt;<br/>&lt;/body&gt;<br/>&lt;/html&gt;<br/></body>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — AuraMart Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl border border-slate-100 p-7">
+      <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-extrabold text-xl mb-4">
+        ⚡
+      </div>
+      <h1 class="text-xl font-extrabold text-slate-900">অ্যাডমিন লগইন</h1>
+      <p class="text-xs text-slate-500 mt-1">প্রোডাক্ট যুক্ত করতে ও অর্ডার কন্ট্রোল করতে পিন দিন।</p>
+
+      <form onsubmit="handleLogin(event)" class="mt-5 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Admin PIN</label>
+          <input id="pinInput" type="password" required placeholder="পিন দিন (ডিফল্ট: 1234)"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-indigo-600 outline-none text-sm" />
+        </div>
+        <p id="loginError" class="text-xs font-semibold text-rose-600 hidden">ভুল পিন দিয়েছেন! আবার চেষ্টা করুন।</p>
+        <button type="submit" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-sm font-bold transition">
+          ড্যাশবোর্ডে প্রবেশ করুন
+        </button>
+      </form>
+      <a href="index.html" class="block text-center text-xs text-slate-500 hover:text-slate-800 mt-5">← কাস্টমার ওয়েবসাইটে ফিরে যান</a>
+    </div>
+  </div>
+
+  <div id="dashboard" class="hidden">
+    <header class="bg-slate-900 text-white sticky top-0 z-30 border-b border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-lg bg-indigo-500 text-xs font-extrabold">ADMIN</span>
+          <h1 class="font-extrabold text-base sm:text-lg">AuraMart Control Center</h1>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold">
+            কাস্টমার সাইট ↗
+          </a>
+          <button onclick="logout()" class="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-semibold">
+            লগআউট
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/70">
+          <p class="text-xs font-semibold text-slate-500">মোট অর্ডার এসেছে</p>
+          <p id="statTotalOrders" class="text-2xl font-extrabold text-slate-900 mt-1">0</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/70">
+          <p class="text-xs font-semibold text-slate-500">পেন্ডিং অর্ডার</p>
+          <p id="statPendingOrders" class="text-2xl font-extrabold text-amber-600 mt-1">0</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/70">
+          <p class="text-xs font-semibold text-slate-500">মোট সেলস ভ্যালু</p>
+          <p id="statTotalRevenue" class="text-2xl font-extrabold text-emerald-600 mt-1">৳0</p>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/70">
+          <p class="text-xs font-semibold text-slate-500">মোট প্রোডাক্ট</p>
+          <p id="statTotalProducts" class="text-2xl font-extrabold text-indigo-600 mt-1">0</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="tabOrders" onclick="switchTab('orders')" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold">
+          অর্ডার ম্যানেজমেন্ট
+        </button>
+        <button id="tabProducts" onclick="switchTab('products')" class="px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold">
+          প্রোডাক্ট যুক্ত ও পরিচালনা
+        </button>
+      </div>
+
+      <section id="ordersSection" class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/70">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-600">স্ট্যাটাস ফিল্টার:</span>
+            <select id="statusFilter" onchange="renderOrders()" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 outline-none">
+              <option value="All">সব অর্ডার</option>
+              <option value="Pending">Pending</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <button onclick="renderAll()" class="text-xs font-bold text-indigo-600 hover:underline">↻ রিফ্রেশ করুন</button>
+        </div>
+
+        <div id="ordersList" class="space-y-3"></div>
+      </section>
+
+      <section id="productsSection" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/70 h-fit">
+          <h2 class="text-base font-extrabold text-slate-900 mb-4">+ নতুন প্রোডাক্ট যুক্ত করুন</h2>
+          <form onsubmit="addProduct(event)" class="space-y-3 text-sm">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">প্রোডাক্টের নাম *</label>
+              <input id="pName" required type="text" placeholder="যেমন: Mechanical Keyboard"
+                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">বিক্রয় মূল্য (৳) *</label>
+                <input id="pPrice" required type="number" min="1" placeholder="1450"
+                  class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">পুরাতন দাম (ঐচ্ছিক)</label>
+                <input id="pOldPrice" type="number" min="1" placeholder="1800"
+                  class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ক্যাটাগরি *</label>
+              <input id="pCategory" required type="text" list="catSuggestions" placeholder="Gadgets / Fashion / Accessories"
+                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none" />
+              <datalist id="catSuggestions">
+                <option value="Gadgets">
+                <option value="Fashion">
+                <option value="Accessories">
+                <option value="Home & Living">
+              </datalist>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">ছবির লিংক (Image URL)</label>
+              <input id="pImage" type="url" placeholder="https://..."
+                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">সংক্ষিপ্ত বিবরণ</label>
+              <textarea id="pDesc" rows="2" placeholder="প্রোডাক্টের মূল বৈশিষ্ট্য..."
+                class="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md transition">
+              প্রোডাক্ট পাবলিশ করুন
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200/70">
+          <h2 class="text-base font-extrabold text-slate-900 mb-4">আপনার প্রোডাক্ট লিস্ট</h2>
+          <div id="adminProductList" class="space-y-3"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const ADMIN_PIN = '1234';
+    const AUTH_KEY = 'auramart_admin_auth';
+    const PRODUCTS_KEY = 'auramart_products_v1';
+    const ORDERS_KEY = 'auramart_orders_v1';
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const pin = document.getElementById('pinInput').value.trim();
+      if (pin === ADMIN_PIN) {
+        sessionStorage.setItem(AUTH_KEY, 'true');
+        showDashboard();
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem(AUTH_KEY);
+      location.reload();
+    }
+
+    function showDashboard() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      renderAll();
+    }
+
+    function getProducts() {
+      return JSON.parse(localStorage.getItem(PRODUCTS_KEY) || '[]');
+    }
+
+    function saveProducts(products) {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+    }
+
+    function getOrders() {
+      return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+    }
+
+    function saveOrders(orders) {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    }
+
+    function switchTab(tab) {
+      const isOrders = tab === 'orders';
+      document.getElementById('ordersSection').classList.toggle('hidden', !isOrders);
+      document.getElementById('productsSection').classList.toggle('hidden', isOrders);
+
+      document.getElementById('tabOrders').className = isOrders
+        ? 'px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold'
+        : 'px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold';
+
+      document.getElementById('tabProducts').className = !isOrders
+        ? 'px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold'
+        : 'px-4 py-2.5 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-bold';
+    }
+
+    function renderStats() {
+      const orders = getOrders();
+      const products = getProducts();
+      const pending = orders.filter(o => o.status === 'Pending').length;
+      const revenue = orders
+        .filter(o => o.status !== 'Cancelled')
+        .reduce((sum, o) => sum + Number(o.total || 0), 0);
+
+      document.getElementById('statTotalOrders').textContent = orders.length;
+      document.getElementById('statPendingOrders').textContent = pending;
+      document.getElementById('statTotalRevenue').textContent = `৳${revenue.toLocaleString()}`;
+      document.getElementById('statTotalProducts').textContent = products.length;
+    }
+
+    function renderOrders() {
+      const filter = document.getElementById('statusFilter').value;
+      const orders = getOrders().filter(o => filter === 'All' || o.status === filter);
+      const container = document.getElementById('ordersList');
+
+      if (!orders.length) {
+        container.innerHTML = `<div class="bg-white p-10 rounded-2xl border border-slate-200/70 text-center text-slate-500 text-sm">
+          এখনো কোনো অর্ডার পাওয়া যায়নি। কাস্টমার সাইট থেকে অর্ডার করলে এখানে দেখাবে।
+        </div>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(o => `
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/70 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <span class="font-extrabold text-slate-900">${o.id}</span>
+              <span class="text-xs text-slate-400 ml-2">${o.date}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <select onchange="updateOrderStatus('${o.id}', this.value)" class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 outline-none">
+                ${['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'].map(st =>
+                  `<option value="${st}" ${o.status === st ? 'selected' : ''}>${st}</option>`
+                ).join('')}
+              </select>
+              <button onclick="deleteOrder('${o.id}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold">
+                ডিলিট
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div class="space-y-1">
+              <p><strong>কাস্টমার:</strong> ${o.customer}</p>
+              <p><strong>ফোন:</strong> <a href="tel:${o.phone}" class="text-indigo-600 font-bold underline">${o.phone}</a></p>
+              <p><strong>ঠিকানা:</strong> ${o.address} <span class="text-slate-500">(${o.area})</span></p>
+              <p><strong>পেমেন্ট:</strong> <span class="font-semibold">${o.payment}</span></p>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl space-y-1.5">
+              <p class="text-xs font-bold text-slate-500">অর্ডারকৃত আইটেম:</p>
+              ${(o.items || []).map(item => `
+                <div class="flex justify-between text-xs">
+                  <span>${item.name} × <strong>${item.qty}</strong></span>
+                  <span class="font-bold">৳${(item.price * item.qty).toLocaleString()}</span>
+                </div>
+              `).join('')}
+              <div class="pt-1.5 border-t border-slate-200 flex justify-between font-extrabold text-slate-900">
+                <span>সর্বমোট (ডেলিভারিসহ)</span>
+                <span class="text-indigo-600">৳${Number(o.total).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const orders = getOrders().map(o => o.id === orderId ? { ...o, status: newStatus } : o);
+      saveOrders(orders);
+      renderStats();
+    }
+
+    function deleteOrder(orderId) {
+      if (!confirm('এই অর্ডারটি ডিলিট করতে চান?')) return;
+      const orders = getOrders().filter(o => o.id !== orderId);
+      saveOrders(orders);
+      renderAll();
+    }
+
+    function addProduct(e) {
+      e.preventDefault();
+      const products = getProducts();
+      const newProd = {
+        id: 'PRD-' + Math.floor(1000 + Math.random() * 9000),
+        name: document.getElementById('pName').value.trim(),
+        price: Number(document.getElementById('pPrice').value),
+        oldPrice: document.getElementById('pOldPrice').value ? Number(document.getElementById('pOldPrice').value) : null,
+        category: document.getElementById('pCategory').value.trim() || 'General',
+        image: document.getElementById('pImage').value.trim() || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80',
+        desc: document.getElementById('pDesc').value.trim(),
+        stock: true
+      };
+
+      products.unshift(newProd);
+      saveProducts(products);
+      e.target.reset();
+      renderAll();
+      alert('নতুন প্রোডাক্ট কাস্টমার ওয়েবসাইটে যুক্ত হয়েছে!');
+    }
+
+    function toggleStock(prodId) {
+      const products = getProducts().map(p => p.id === prodId ? { ...p, stock: !p.stock } : p);
+      saveProducts(products);
+      renderProductsAdmin();
+    }
+
+    function deleteProduct(prodId) {
+      if (!confirm('প্রোডাক্টটি মুছে ফেলতে চান?')) return;
+      const products = getProducts().filter(p => p.id !== prodId);
+      saveProducts(products);
+      renderAll();
+    }
+
+    function renderProductsAdmin() {
+      const products = getProducts();
+      const box = document.getElementById('adminProductList');
+
+      if (!products.length) {
+        box.innerHTML = `<p class="text-sm text-slate-500 py-8 text-center">কোনো প্রোডাক্ট নেই। বাম পাশ থেকে যুক্ত করুন।</p>`;
+        return;
+      }
+
+      box.innerHTML = products.map(p => `
+        <div class="flex items-center justify-between gap-3 p-3 rounded-2xl border border-slate-100 hover:bg-slate-50/70">
+          <div class="flex items-center gap-3 min-w-0">
+            <img src="${p.image}" class="w-14 h-14 rounded-xl object-cover bg-slate-100 shrink-0" />
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-slate-900 truncate">${p.name}</p>
+              <p class="text-xs text-slate-500">${p.category} • <strong class="text-slate-800">৳${Number(p.price).toLocaleString()}</strong></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="toggleStock('${p.id}')" class="px-2.5 py-1.5 rounded-xl text-xs font-bold ${
+              p.stock ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+            }">
+              ${p.stock ? 'In Stock' : 'Stock Out'}
+            </button>
+            <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold">
+              ডিলিট
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAll() {
+      renderStats();
+      renderOrders();
+      renderProductsAdmin();
+    }
+
+    if (sessionStorage.getItem(AUTH_KEY) === 'true') {
+      showDashboard();
+    }
+  </script>
+</body>
 </html>
